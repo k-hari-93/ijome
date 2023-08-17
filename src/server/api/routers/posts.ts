@@ -1,6 +1,8 @@
 import { clerkClient } from "@clerk/nextjs";
 import type { User } from "@clerk/nextjs/dist/types/server";
 import { TRPCError } from "@trpc/server";
+import { Ratelimit } from "@upstash/ratelimit";
+import { Redis } from "@upstash/redis";
 import { z } from "zod";
 import {
   createTRPCRouter,
@@ -11,6 +13,12 @@ import {
 const filterUserFieldsForClient = (user: User) => {
   return { id: user.id, username: user.username, profileImage: user.imageUrl };
 };
+
+// Allow 3 requests per window of 1 minute
+const rateLimiter = new Ratelimit({
+  redis: Redis.fromEnv(),
+  limiter: Ratelimit.slidingWindow(3, "1 m"),
+});
 
 export const postsRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
@@ -55,6 +63,11 @@ export const postsRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const authorId = ctx.userId;
+
+      const { success } = await rateLimiter.limit(authorId);
+      if (!success) {
+        throw new TRPCError({ code: "TOO_MANY_REQUESTS" });
+      }
 
       await ctx.prisma.post.create({
         data: {
