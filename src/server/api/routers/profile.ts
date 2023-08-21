@@ -14,8 +14,6 @@ export const profileRouter = createTRPCRouter({
         })
       ).map(filterUserFieldsForClient);
 
-      console.log("Yoohooo");
-
       if (!user) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
