@@ -1,5 +1,4 @@
 import { SignInButton, useUser } from "@clerk/nextjs";
-import { type RouterOutputs } from "~/utils/api";
 import { api } from "~/utils/api";
 import Image from "next/image";
 import dayjs from "dayjs";
@@ -7,7 +6,8 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import { LoadingPage, LoadingSpinner } from "~/components/loading";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
-import Link from "next/link";
+import { PageLayout } from "~/components/layout";
+import PostView from "~/components/postview";
 
 dayjs.extend(relativeTime);
 
@@ -71,37 +71,6 @@ export default function Home() {
     );
   };
 
-  type PostWithUser = RouterOutputs["posts"]["getAll"][number];
-
-  const PostView = (props: PostWithUser) => {
-    const { post, author } = props;
-    return (
-      <div key={post.id} className="flex gap-3 border-b border-slate-400 p-4">
-        <Image
-          src={author.profileImage}
-          alt={`${author.username}'s profile picture`}
-          className="h-12 w-12 rounded-full"
-          width={48}
-          height={48}
-        />
-        <div className="flex flex-col">
-          <div className="flex gap-1 text-slate-100">
-            <Link href={`/@${author.username}`}>
-              <span>{`@${author.username}`}</span>
-            </Link>
-            <span className="font-thin">·</span>
-            <Link href={`/post/${post.id}`}>
-              <span className="font-thin">
-                {dayjs(post.createdAt).fromNow()}
-              </span>
-            </Link>
-          </div>
-          <span>{post.content}</span>
-        </div>
-      </div>
-    );
-  };
-
   const Feed = () => {
     const { data, isLoading: postsLoading } = api.posts.getAll.useQuery();
 
@@ -123,18 +92,16 @@ export default function Home() {
   if (!userLoaded) return <div></div>;
 
   return (
-    <main className="flex h-auto justify-center">
-      <div className="w-full border-x border-slate-400 md:max-w-2xl">
-        <div className="flex border-b border-slate-400 p-4">
-          {!isSignedIn && (
-            <div className="flex justify-center">
-              <SignInButton />
-            </div>
-          )}
-          {isSignedIn && <CreatePostWizard />}
-        </div>
-        <Feed />
+    <PageLayout>
+      <div className="flex border-b border-slate-400 p-4">
+        {!isSignedIn && (
+          <div className="flex justify-center">
+            <SignInButton />
+          </div>
+        )}
+        {isSignedIn && <CreatePostWizard />}
       </div>
-    </main>
+      <Feed />
+    </PageLayout>
   );
 }

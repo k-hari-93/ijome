@@ -8,7 +8,6 @@ export default function PostPage() {
     <>
       <Head>
         <title>Post Page</title>
-        <meta name="Y" content="Nothing to see here" />
       </Head>
       <main className="flex h-auto justify-center">
         <div>Post View</div>
