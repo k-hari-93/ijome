@@ -1,0 +1,23 @@
+name: CI
+
+on: [push, pull_request]
+
+env:
+  DATABASE_URL: "https://someurl.com"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Run Type Checking
+        run: npm run typecheck
+
+      - name: Run Linting
+        run: npm run lint

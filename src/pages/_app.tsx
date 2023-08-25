@@ -10,11 +10,8 @@ const MyApp: AppType = ({ Component, pageProps }) => {
   return (
     <ClerkProvider {...pageProps}>
       <Head>
-        <title>Y</title>
-        <meta
-          name="Y - Emote Away"
-          content="Express yourself with nothing but emoticons"
-        />
+        <title>Y - Emote Away</title>
+        <meta name="description" content="Express yourself with emoticons" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Toaster position="bottom-center" />
